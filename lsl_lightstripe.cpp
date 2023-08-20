@@ -7,25 +7,25 @@ Mat CLightStripe::LS_OutLine(String&sPicPath,Mat&mImgRect)
 	Mat mImg = imread(sPicPath);
 	Mat mRect, mThre, mImgCanny;
 	mImg.copyTo(mRect);
-	//±ßÔµ¼ì²â¶şÖµ»¯
+	//è¾¹ç¼˜æ£€æµ‹äºŒå€¼åŒ–
 	threshold(mImg, mThre, 80, 255, THRESH_BINARY);
 	Canny(mThre, mImgCanny, 80, 160, 3, false);
 
 
 
-	//ÂÖÀª·¢ÏÖÓë»æÖÆ
+	//è½®å»“å‘ç°ä¸ç»˜åˆ¶
 	vector<vector<Point>>vContours;
 	vector<Vec4i>vHierarchy;
 	findContours(mImgCanny, vContours, vHierarchy, 0, 2, Point());
-	//Ñ°ÕÒÂÖÀªµÄÍâ½Ó¾ØĞÎ
+	//å¯»æ‰¾è½®å»“çš„å¤–æ¥çŸ©å½¢
 	for (int n = 0; n < vContours.size(); n++)
 	{
 
-		//×î´óÍâ½Ó¾ØĞÎ
+		//æœ€å¤§å¤–æ¥çŸ©å½¢
 		Rect rect = boundingRect(vContours[n]);
 		rectangle(mRect, rect, Scalar(255, 255, 255), 1, 8, 0);
 	}
-	//Ïà¼õµÃµ½±ß¿ò
+	//ç›¸å‡å¾—åˆ°è¾¹æ¡†
 	Mat mSubtract;
 	absdiff(mImg, mRect, mSubtract);
 	Mat mImgThre, mGray;
@@ -34,14 +34,14 @@ Mat CLightStripe::LS_OutLine(String&sPicPath,Mat&mImgRect)
 	vector<vector<Point>>vContours1;
 	vector<Vec4i>vHierarchy1;
 	vector<Point>  vHull;
-	//¼ÆËã±ß¿òµã
+	//è®¡ç®—è¾¹æ¡†ç‚¹
 	vector<int> vXFrame;
 	vector<int>vYFrame;
 	findContours(mImgThre, vContours1, vHierarchy1, 0, 2, Point());
 	for (int n = 0; n < vContours1.size(); n++)
 	{
-		convexHull(vContours1[n], vHull);    //¼ì²â¸ÃÂÖÀªµÄÍ¹°ü
-		//»æÖÆÍ¹°ü
+		convexHull(vContours1[n], vHull);    //æ£€æµ‹è¯¥è½®å»“çš„å‡¸åŒ…
+		//ç»˜åˆ¶å‡¸åŒ…
 		for (int i = 0; i < vHull.size(); ++i) {
 			circle(mSubtract, vHull[i], 4, Scalar(255, 0, 0), 1, 8, 0);
 			vXFrame.push_back(vHull[i].x);
@@ -53,26 +53,7 @@ Mat CLightStripe::LS_OutLine(String&sPicPath,Mat&mImgRect)
 	vector<int>::iterator ymaxpos = max_element(vYFrame.begin(), vYFrame.end());
 	vector<int>::iterator yminpos = min_element(vYFrame.begin(), vYFrame.end());
 	//cout << *xmaxpos << " " << *xminpos << endl;
-	//cout << *ymaxpos << " " << *yminpos << endl;
-	vector<vector<Point2i>> vContours3;
-	vector<Point2i> vPoints;
-	vPoints.push_back(Point2i(*xmaxpos, *yminpos - 20));
-	vPoints.push_back(Point2i(*xmaxpos, *ymaxpos + 20));
-	vPoints.push_back(Point2i(*xminpos, *ymaxpos + 20));
-	vPoints.push_back(Point2i(*xminpos, *yminpos - 20));
-	vContours3.push_back(vPoints);
-	int nXSubtract = *xmaxpos - *xminpos;
-	int nYSubtract = *ymaxpos - *yminpos;
-	Mat mRoi = mImg(Rect(*xminpos, *yminpos - 20, *xmaxpos - *xminpos, *ymaxpos + 40 - *yminpos));
-	Mat mDst;
-	mImg.copyTo(mImgRect); //Éî¿½±´ÓÃÀ´»æÖÆ×î´óÍâ½Ó¾ØĞÎ
-	for (int n = 0; n < vContours3.size(); n++)
-	{
-
-		//×î´óÍâ½Ó¾ØĞÎ
-		Rect rect = boundingRect(vContours3[n]);
-		rectangle(mImgRect, rect, Scalar(255, 255, 255), 1, 8, 0);
-	}
+	//
 	//imgs.push_back(mDst);
 	return mDst;
 }
@@ -84,25 +65,25 @@ Mat CLightStripe::LS_RoiCut(String& m_sPicPath)
 	Mat mRect, mImgThre, mImgCanny;
 	mSrcImg.copyTo(mRect);
 	mSrcImg.copyTo(mImgCopy);
-	//±ßÔµ¼ì²â¶şÖµ»¯
+	//è¾¹ç¼˜æ£€æµ‹äºŒå€¼åŒ–
 	threshold(mSrcImg, mImgThre, 80, 255, THRESH_BINARY);
 	Canny(mImgThre, mImgCanny, 80, 160, 3, false);
 
 
 
-	//ÂÖÀª·¢ÏÖÓë»æÖÆ
+	//è½®å»“å‘ç°ä¸ç»˜åˆ¶
 	vector<vector<Point>>vContours;
 	vector<Vec4i>vHierarchy;
 	findContours(mImgCanny, vContours, vHierarchy, 0, 2, Point());
-	//Ñ°ÕÒÂÖÀªµÄÍâ½Ó¾ØĞÎ
+	//å¯»æ‰¾è½®å»“çš„å¤–æ¥çŸ©å½¢
 	for (int n = 0; n < vContours.size(); n++)
 	{
 
-		//×î´óÍâ½Ó¾ØĞÎ
+		//æœ€å¤§å¤–æ¥çŸ©å½¢
 		Rect rect = boundingRect(vContours[n]);
 		rectangle(mRect, rect, Scalar(255, 255, 255), 1, 8, 0);
 	}
-	//Ïà¼õµÃµ½±ß¿ò
+	//ç›¸å‡å¾—åˆ°è¾¹æ¡†
 	Mat mSubtract;
 	absdiff(mSrcImg, mRect, mSubtract);
 	Mat mThre, mGray;
@@ -111,14 +92,14 @@ Mat CLightStripe::LS_RoiCut(String& m_sPicPath)
 	vector<vector<Point>>vContours1;
 	vector<Vec4i>vHierarchy1;
 	vector<Point>  vHull;
-	//¼ÆËã±ß¿òµã
+	//è®¡ç®—è¾¹æ¡†ç‚¹
 	vector<int> vXFrame;
 	vector<int>vYFrame;
 	findContours(mThre, vContours1, vHierarchy1, 0, 2, Point());
 	for (int n = 0; n < vContours1.size(); n++)
 	{
-		convexHull(vContours1[n], vHull);    //¼ì²â¸ÃÂÖÀªµÄÍ¹°ü
-		//»æÖÆÍ¹°ü
+		convexHull(vContours1[n], vHull);    //æ£€æµ‹è¯¥è½®å»“çš„å‡¸åŒ…
+		//ç»˜åˆ¶å‡¸åŒ…
 		for (int i = 0; i < vHull.size(); ++i) {
 			circle(mSubtract, vHull[i], 4, Scalar(255, 0, 0), 1, 8, 0);
 			vXFrame.push_back(vHull[i].x);
@@ -137,19 +118,7 @@ Mat CLightStripe::LS_RoiCut(String& m_sPicPath)
 	points.push_back(Point2i(*xmaxpos, *ymaxpos ));
 	points.push_back(Point2i(*xminpos, *ymaxpos ));
 	points.push_back(Point2i(*xminpos, *yminpos));
-	vContours3.push_back(points);
-	int nXSubtract = *xmaxpos - *xminpos;
-	int nYSubtract = *ymaxpos - *yminpos;
-	Mat mRoi = mSrcImg(Rect(*xminpos, *yminpos , *xmaxpos - *xminpos, *ymaxpos  - *yminpos));
-	Mat mImgRect,mDst;
-	mSrcImg.copyTo(mImgRect); //Éî¿½±´ÓÃÀ´»æÖÆ×î´óÍâ½Ó¾ØĞÎ
-	for (int n = 0; n < vContours3.size(); n++)
-	{
-
-		//×î´óÍâ½Ó¾ØĞÎ
-		Rect rect = boundingRect(vContours3[n]);
-		rectangle(mImgRect, rect, Scalar(255, 255, 255), 1, 8, 0);
-	}
+	v
 	int nX = *xminpos;
 	int nY = *yminpos;
 	Rect rect(nX, nY, nXSubtract , nYSubtract);
@@ -158,7 +127,7 @@ Mat CLightStripe::LS_RoiCut(String& m_sPicPath)
 	return mSaveRoi;
 
 }
-//ÖĞÖµÂË²¨
+//ä¸­å€¼æ»¤æ³¢
 Mat CLightStripe::LS_MidBlur(Mat&mSrcImg)
 {
 	Mat mGray,medianPic;
@@ -166,7 +135,7 @@ Mat CLightStripe::LS_MidBlur(Mat&mSrcImg)
 	medianBlur(mGray, medianPic, 3);
 	return medianPic;
 }
-//OtsuÑ°ÕÒ×î¼ÑãĞÖµ
+//Otsuå¯»æ‰¾æœ€ä½³é˜ˆå€¼
 int CLightStripe::LS_Otsu(Mat& mSrcImg, Mat& mDst) {
 	int nThresh;
 	const int Grayscale = 256;
@@ -175,7 +144,7 @@ int CLightStripe::LS_Otsu(Mat& mSrcImg, Mat& mDst) {
 	int cols = mSrcImg.cols;
 	for (int i = 0; i < rows; ++i) {
 		const uchar* ptr = mSrcImg.ptr<uchar>(i);
-		for (int j = 0; j < cols; ++j) {        //Ö±·½Í¼Í³¼Æ
+		for (int j = 0; j < cols; ++j) {        //ç›´æ–¹å›¾ç»Ÿè®¡
 			mGraynum[ptr[j]]++;
 		}
 	}
@@ -185,14 +154,14 @@ int CLightStripe::LS_Otsu(Mat& mSrcImg, Mat& mDst) {
 	double MK[Grayscale] = { 0 };
 	double mSrcImgpixnum = rows * cols, nSumtmpPK = 0, nSumtmpMK = 0;
 	for (int i = 0; i < Grayscale; ++i) {
-		P[i] = mGraynum[i] / mSrcImgpixnum;   //Ã¿¸ö»Ò¶È¼¶³öÏÖµÄ¸ÅÂÊ
-		PK[i] = nSumtmpPK + P[i];         //¸ÅÂÊÀÛ¼ÆºÍ 
+		P[i] = mGraynum[i] / mSrcImgpixnum;   //æ¯ä¸ªç°åº¦çº§å‡ºç°çš„æ¦‚ç‡
+		PK[i] = nSumtmpPK + P[i];         //æ¦‚ç‡ç´¯è®¡å’Œ 
 		nSumtmpPK = PK[i];
-		MK[i] = nSumtmpMK + i * P[i];       //»Ò¶È¼¶µÄÀÛ¼Ó¾ùÖµ                                                                                                                                                                                                                                                                                                                                                                                                        
+		MK[i] = nSumtmpMK + i * P[i];       //ç°åº¦çº§çš„ç´¯åŠ å‡å€¼                                                                                                                                                                                                                                                                                                                                                                                                        
 		nSumtmpMK = MK[i];
 	}
 
-	//¼ÆËãÀà¼ä·½²î
+	//è®¡ç®—ç±»é—´æ–¹å·®
 	double dVar = 0;
 	for (int k = 0; k < Grayscale; ++k) {
 		if ((MK[Grayscale - 1] * PK[k] - MK[k]) * (MK[Grayscale - 1] * PK[k] - MK[k]) / (PK[k] * (1 - PK[k])) > dVar) {
@@ -201,23 +170,19 @@ int CLightStripe::LS_Otsu(Mat& mSrcImg, Mat& mDst) {
 		}
 	}
 
-	//ãĞÖµ´¦Àí
+	//é˜ˆå€¼å¤„ç†
 	mSrcImg.copyTo(mDst);
 	for (int i = 0; i < rows; ++i) {
 		uchar* ptr = mDst.ptr<uchar>(i);
 		for (int j = 0; j < cols; ++j) {
 			if (ptr[j] > nThresh)
-				ptr[j] = 255;
-			else
-				ptr[j] = 0;
-		}
-	}
+	
 	return nThresh;
 }
-//´´½¨ÎÄ¼ş£¬ÓÃÓÚ¶ÁÈ¡¹âÌõÍ¼Ïñ
+//åˆ›å»ºæ–‡ä»¶ï¼Œç”¨äºè¯»å–å…‰æ¡å›¾åƒ
 void CLightStripe::LS_ThreshTxt(int nThresh, CString& str)
 {
-	ofstream flFile;//´´½¨ÎÄ¼ş
+	ofstream flFile;//åˆ›å»ºæ–‡ä»¶
 	flFile.open("D:\\pictureSave\\lightSave\\thresh.txt");
 	flFile  <<nThresh<< endl;
 	
@@ -228,52 +193,48 @@ void CLightStripe::LS_ThreshTxt(int nThresh, CString& str)
 	f.Read(str.GetBuffer(f.GetLength()), f.GetLength());
 	f.Close();
 }
-//ĞÎÌ¬Ñ§²Ù×÷
+//å½¢æ€å­¦æ“ä½œ
 Mat CLightStripe::LS_Morphology(Mat&mDst)
 {
 
 	Mat mCloseImg;
-	Mat mStruct, mDilateImg;  //´´½¨Í¼ÏñÅòÕÍ¾ØĞÎ½á¹¹ÔªËØ¡¢´æ·ÅÅòÕÍºóµÄÍ¼Ïñ
+	Mat mStruct, mDilateImg;  //åˆ›å»ºå›¾åƒè†¨èƒ€çŸ©å½¢ç»“æ„å…ƒç´ ã€å­˜æ”¾è†¨èƒ€åçš„å›¾åƒ
 	mStruct = getStructuringElement(0, Size(3, 3));
 	morphologyEx(mDst, mCloseImg, MORPH_CLOSE, mStruct);
 	dilate(mCloseImg, mDilateImg, mStruct);
 	erode(mDilateImg, mDilateImg, mStruct);
 	return mDilateImg;
 }
-//Á¬Í¨ÓòÉ¸³ı
+//è¿é€šåŸŸç­›é™¤
 void CLightStripe::Clear_MicroConnected_Areas(Mat src, Mat& dst, double min_area)
 {
-	//±¸·İ¸´ÖÆ
+	//å¤‡ä»½å¤åˆ¶
 	dst = src.clone();
-	vector<vector<Point>> contours; //´´½¨ÂÖÀªÈİÆ÷
+	vector<vector<Point>> contours; //åˆ›å»ºè½®å»“å®¹å™¨
 	vector<Vec4i> hierachy;
-	// µÚËÄ¸ö²ÎÊıCV_RETR_EXTERNAL£¬±íÊ¾Ñ°ÕÒ×îÍâÎ§ÂÖÀª
-   // µÚÎå¸ö²ÎÊıCV_CHAIN_APPROX_NONE£¬±íÊ¾±£´æÎïÌå±ß½çÉÏËùÓĞÁ¬ĞøµÄÂÖÀªµãµ½contoursÏòÁ¿ÄÚ
+	// ç¬¬å››ä¸ªå‚æ•°CV_RETR_EXTERNALï¼Œè¡¨ç¤ºå¯»æ‰¾æœ€å¤–å›´è½®å»“
+   // ç¬¬äº”ä¸ªå‚æ•°CV_CHAIN_APPROX_NONEï¼Œè¡¨ç¤ºä¿å­˜ç‰©ä½“è¾¹ç•Œä¸Šæ‰€æœ‰è¿ç»­çš„è½®å»“ç‚¹åˆ°contourså‘é‡å†…
 	findContours(src, contours, hierachy, RETR_EXTERNAL, CHAIN_APPROX_NONE, Point());
 
 	if (!contours.empty() && !hierachy.empty())
 	{
 		vector<vector<Point>>::const_iterator itc = contours.begin();
-		//±éÀúËùÓĞÂÖÀª
+		//éå†æ‰€æœ‰è½®å»“
 		while (itc != contours.end())
 		{
-			//¶¨Î»µ±Ç°ÂÖÀªËùÔÚÎ»ÖÃ
+			//å®šä½å½“å‰è½®å»“æ‰€åœ¨ä½ç½®
 			Rect rect = boundingRect(Mat(*itc));
-			//¼ÆËãÁ¬Í¨ÇøÃæ»ı
+			//è®¡ç®—è¿é€šåŒºé¢ç§¯
 			double area = contourArea(*itc);
-			//ÈôÃæ»ıĞ¡ÓÚÉèÖÃãĞÖµ
+			//è‹¥é¢ç§¯å°äºè®¾ç½®é˜ˆå€¼
 			if (area < min_area)
 			{
-				//±éÀúÂÖÀªËùÔÚÎ»ÖÃËùÓĞÏñËØµã
+				//éå†è½®å»“æ‰€åœ¨ä½ç½®æ‰€æœ‰åƒç´ ç‚¹
 				for (int i = rect.y; i < rect.y + rect.height; i++)
 				{
 					uchar* output_data = dst.ptr<uchar>(i);
 					for (int j = rect.x; j < rect.x + rect.width; j++)
-					{
-						//½«Á¬Í¨ÇøÓòµÄÖµÉèÎª0
-						if (output_data[j] >= 20)
-						{
-							output_data[j] = 0;
+			
 						}
 					}
 
@@ -283,14 +244,14 @@ void CLightStripe::Clear_MicroConnected_Areas(Mat src, Mat& dst, double min_area
 		}
 	}
 }
-//¸ßÍ¨ÂË²¨ºËº¯Êı
+//é«˜é€šæ»¤æ³¢æ ¸å‡½æ•°
 Mat CLightStripe::ideal_high_kernel1(cv::Mat& scr, float sigma)
 {
-	cv::Mat ideal_high_pass(scr.size(), CV_32FC1); //£¬CV_32FC1
-	float d0 = sigma;//°ë¾¶D0Ô½Ğ¡£¬Ä£ºıÔ½´ó£»°ë¾¶D0Ô½´ó£¬Ä£ºıÔ½Ğ¡
+	cv::Mat ideal_high_pass(scr.size(), CV_32FC1); //ï¼ŒCV_32FC1
+	float d0 = sigma;//åŠå¾„D0è¶Šå°ï¼Œæ¨¡ç³Šè¶Šå¤§ï¼›åŠå¾„D0è¶Šå¤§ï¼Œæ¨¡ç³Šè¶Šå°
 	for (int i = 0; i < scr.rows; i++) {
 		for (int j = 0; j < scr.cols; j++) {
-			float d = sqrt(pow(float(i - scr.rows / 2), 2) + pow(float(j - scr.cols / 2), 2));//·Ö×Ó,¼ÆËãpow±ØĞëÎªfloatĞÍ
+			float d = sqrt(pow(float(i - scr.rows / 2), 2) + pow(float(j - scr.cols / 2), 2));//åˆ†å­,è®¡ç®—powå¿…é¡»ä¸ºfloatå‹
 			if (d <= d0) {
 				ideal_high_pass.at<float>(i, j) = 0;
 			}
@@ -301,7 +262,7 @@ Mat CLightStripe::ideal_high_kernel1(cv::Mat& scr, float sigma)
 	}
 	return ideal_high_pass;
 }
-//¸ßÍ¨ÂË²¨Æ÷
+//é«˜é€šæ»¤æ³¢å™¨
 Mat CLightStripe::ideal_high_pass_filter1(cv::Mat& src, float sigma)
 {
 	cv::Mat padded = image_make_border1(src);
@@ -309,90 +270,78 @@ Mat CLightStripe::ideal_high_pass_filter1(cv::Mat& src, float sigma)
 	cv::Mat result = frequency_filter1(padded, ideal_kernel);
 	return result;
 }
-// ÆµÂÊÓòÂË²¨
+// é¢‘ç‡åŸŸæ»¤æ³¢
 cv::Mat CLightStripe::frequency_filter1(cv::Mat& scr, cv::Mat& blur)
 {
 	cv::Mat mask = scr == scr;
 	scr.setTo(0.0f, ~mask);
 
-	//´´½¨Í¨µÀ£¬´æ´¢dftºóµÄÊµ²¿ÓëĞé²¿£¨CV_32F£¬±ØĞëÎªµ¥Í¨µÀÊı£©
-	cv::Mat plane[] = { scr.clone(), cv::Mat::zeros(scr.size() , CV_32FC1) };
-
-	cv::Mat complexIm;
-	cv::merge(plane, 2, complexIm); // ºÏ²¢Í¨µÀ £¨°ÑÁ½¸ö¾ØÕóºÏ²¢ÎªÒ»¸ö2Í¨µÀµÄMatÀàÈİÆ÷£©
-	cv::dft(complexIm, complexIm); // ½øĞĞ¸µÁ¢Ò¶±ä»»£¬½á¹û±£´æÔÚ×ÔÉí
-
-	// ·ÖÀëÍ¨µÀ£¨Êı×é·ÖÀë£©
-	cv::split(complexIm, plane);
-
-	// ÒÔÏÂµÄ²Ù×÷ÊÇÆµÓòÇ¨ÒÆ
-	fftshift1(plane[0], plane[1]);
-
-	// *****************ÂË²¨Æ÷º¯ÊıÓëDFT½á¹ûµÄ³Ë»ı****************
+	//åˆ›å»ºé€šé“ï¼Œå­˜å‚¨dftåçš„
+	// *****************æ»¤æ³¢å™¨å‡½æ•°ä¸DFTç»“æœçš„ä¹˜ç§¯****************
 	cv::Mat blur_r, blur_i, BLUR;
-	cv::multiply(plane[0], blur, blur_r);  // ÂË²¨£¨Êµ²¿ÓëÂË²¨Æ÷Ä£°å¶ÔÓ¦ÔªËØÏà³Ë£©
-	cv::multiply(plane[1], blur, blur_i);  // ÂË²¨£¨Ğé²¿ÓëÂË²¨Æ÷Ä£°å¶ÔÓ¦ÔªËØÏà³Ë£©
+	cv::multiply(plane[0], blur, blur_r);  // æ»¤æ³¢ï¼ˆå®éƒ¨ä¸æ»¤æ³¢å™¨æ¨¡æ¿å¯¹åº”å…ƒç´ ç›¸ä¹˜ï¼‰
+	cv::multiply(plane[1], blur, blur_i);  // æ»¤æ³¢ï¼ˆè™šéƒ¨ä¸æ»¤æ³¢å™¨æ¨¡æ¿å¯¹åº”å…ƒç´ ç›¸ä¹˜ï¼‰
 	cv::Mat plane1[] = { blur_r, blur_i };
 
-	// ÔÙ´Î°áÒÆ»ØÀ´½øĞĞÄæ±ä»»
+	// å†æ¬¡æ¬ç§»å›æ¥è¿›è¡Œé€†å˜æ¢
 	fftshift1(plane1[0], plane1[1]);
-	cv::merge(plane1, 2, BLUR); // Êµ²¿ÓëĞé²¿ºÏ²¢
+	cv::merge(plane1, 2, BLUR); // å®éƒ¨ä¸è™šéƒ¨åˆå¹¶
 
-	cv::idft(BLUR, BLUR);       // idft½á¹ûÒ²Îª¸´Êı
+	cv::idft(BLUR, BLUR);       // idftç»“æœä¹Ÿä¸ºå¤æ•°
 	BLUR = BLUR / BLUR.rows / BLUR.cols;
 
-	cv::split(BLUR, plane);//·ÖÀëÍ¨µÀ£¬Ö÷Òª»ñÈ¡Í¨µÀ
+	cv::split(BLUR, plane);//åˆ†ç¦»é€šé“ï¼Œä¸»è¦è·å–é€šé“
 
 	return plane[0];
 }
-// Í¼Ïñ±ß½ç´¦Àí
+// å›¾åƒè¾¹ç•Œå¤„ç†
 cv::Mat CLightStripe::image_make_border1(cv::Mat& src)
 {
-	int w = cv::getOptimalDFTSize(src.cols); // »ñÈ¡DFT±ä»»µÄ×î¼Ñ¿í¶È
-	int h = cv::getOptimalDFTSize(src.rows); // »ñÈ¡DFT±ä»»µÄ×î¼Ñ¸ß¶È
+	int w = cv::getOptimalDFTSize(src.cols); // è·å–DFTå˜æ¢çš„æœ€ä½³å®½åº¦
+	int h = cv::getOptimalDFTSize(src.rows); // è·å–DFTå˜æ¢çš„æœ€ä½³é«˜åº¦
 
 	cv::Mat padded;
-	// ³£Á¿·¨À©³äÍ¼Ïñ±ß½ç£¬³£Á¿ = 0
+	// å¸¸é‡æ³•æ‰©å……å›¾åƒè¾¹ç•Œï¼Œå¸¸é‡ = 0
 	cv::copyMakeBorder(src, padded, 0, h - src.rows, 0, w - src.cols, cv::BORDER_CONSTANT, cv::Scalar::all(0));
 	padded.convertTo(padded, CV_32FC1);
 
 	return padded;
 }
-// fft±ä»»ºó½øĞĞÆµÆ×°áÒÆ
+// fftå˜æ¢åè¿›è¡Œé¢‘è°±æ¬ç§»
 void CLightStripe::fftshift1(cv::Mat& plane0, cv::Mat& plane1)
 {
-	// ÒÔÏÂµÄ²Ù×÷ÊÇÒÆ¶¯Í¼Ïñ  (ÁãÆµÒÆµ½ÖĞĞÄ)
+	// ä»¥ä¸‹çš„æ“ä½œæ˜¯ç§»åŠ¨å›¾åƒ  (é›¶é¢‘ç§»åˆ°ä¸­å¿ƒ)
 	int cx = plane0.cols / 2;
 	int cy = plane0.rows / 2;
-	cv::Mat part1_r(plane0, cv::Rect(0, 0, cx, cy));  // ÔªËØ×ø±ê±íÊ¾Îª(cx, cy)
+	cv::Mat part1_r(plane0, cv::Rect(0, 0, cx, cy));  // å…ƒç´ åæ ‡è¡¨ç¤ºä¸º(cx, cy)
 	cv::Mat part2_r(plane0, cv::Rect(cx, 0, cx, cy));
 	cv::Mat part3_r(plane0, cv::Rect(0, cy, cx, cy));
 	cv::Mat part4_r(plane0, cv::Rect(cx, cy, cx, cy));
 
 	cv::Mat temp;
-	part1_r.copyTo(temp);  //×óÉÏÓëÓÒÏÂ½»»»Î»ÖÃ(Êµ²¿)
+	part1_r.copyTo(temp);  //å·¦ä¸Šä¸å³ä¸‹äº¤æ¢ä½ç½®(å®éƒ¨)
 	part4_r.copyTo(part1_r);
 	temp.copyTo(part4_r);
 
-	part2_r.copyTo(temp);  //ÓÒÉÏÓë×óÏÂ½»»»Î»ÖÃ(Êµ²¿)
+	part2_r.copyTo(temp);  //å³ä¸Šä¸å·¦ä¸‹äº¤æ¢ä½ç½®(å®éƒ¨)
 	part3_r.copyTo(part2_r);
 	temp.copyTo(part3_r);
 
-	cv::Mat part1_i(plane1, cv::Rect(0, 0, cx, cy));  //ÔªËØ×ø±ê(cx,cy)
+	cv::Mat part1_i(plane1, cv::Rect(0, 0, cx, cy));  //å…ƒç´ åæ ‡(cx,cy)
 	cv::Mat part2_i(plane1, cv::Rect(cx, 0, cx, cy));
 	cv::Mat part3_i(plane1, cv::Rect(0, cy, cx, cy));
 	cv::Mat part4_i(plane1, cv::Rect(cx, cy, cx, cy));
 
-	part1_i.copyTo(temp);  //×óÉÏÓëÓÒÏÂ½»»»Î»ÖÃ(Ğé²¿)
+	part1_i.copyTo(temp);  //å·¦ä¸Šä¸å³ä¸‹äº¤æ¢ä½ç½®(è™šéƒ¨)
 	part4_i.copyTo(part1_i);
 	temp.copyTo(part4_i);
 
-	part2_i.copyTo(temp);  //ÓÒÉÏÓë×óÏÂ½»»»Î»ÖÃ(Ğé²¿)
+	part2_i.copyTo(temp);  //å³ä¸Šä¸å·¦ä¸‹äº¤æ¢ä½ç½®(è™šéƒ¨)
 	part3_i.copyTo(part2_i);
 	temp.copyTo(part3_i);
 }
 
-//¼ÆËã»Ò¶ÈÖØĞÄ
+//è®¡ç®—ç°åº¦é‡å¿ƒ
 Mat CLightStripe::LS_LightStr(Mat&mDilateImg, String& m_sPicPath, Mat mRoiPic,int nThresh)
 {
 	String sPath = m_sPicPath;
@@ -422,18 +371,14 @@ Mat CLightStripe::LS_LightStr(Mat&mDilateImg, String& m_sPicPath, Mat mRoiPic,in
 				if (mSrcImg.at<uchar>(j + 1, i) - mSrcImg.at<uchar>(j, i) < 0)
 				{
 					a = j;
-					cout << "±ß½çµã:" << a << endl;
+					cout << "è¾¹ç•Œç‚¹:" << a << endl;
 
 					break;
 				}
 			}
 		}
 		if (num == 0)
-			continue;
-		float x = sum / num;
-		circle(srcimg, Point(i, x), 0.5, Scalar(0, 0, 255), -1, 8);
-		//circle(srcimg, Points, 1, Scalar(0, 255, 255));
-		int b = a + 1;
+		
 		for (size_t j = b; j < mSrcImg.rows; j++)
 		{
 			if (mSrcImg.at<uchar>(j, i) == 255)
@@ -445,12 +390,8 @@ Mat CLightStripe::LS_LightStr(Mat&mDilateImg, String& m_sPicPath, Mat mRoiPic,in
 		if (num1 == 0)
 			continue;
 		float x1 = sum1 / num1;
-		circle(srcimg, Point(i, x1), 0.5, Scalar(0, 0, 255), -1, 8);
-	}
-	//namedWindow("srcimg", WINDOW_GUI_NORMAL);
-	return srcimg;
 }
-//¹âÌõÏ¸»¯
+//å…‰æ¡ç»†åŒ–
 void CLightStripe::LS_ThinSubiteration(Mat& pSrc, Mat& pDst) {
 	int rows = pSrc.rows;
 	int cols = pSrc.cols;
@@ -495,7 +436,7 @@ void CLightStripe::LS_ThinSubiteration(Mat& pSrc, Mat& pDst) {
 		}
 	}
 }
-//´ò¿ªÎÄ¼ş
+//æ‰“å¼€æ–‡ä»¶
 CString CLightStripe::LS_OpenFile()
 {
 	TCHAR            szFolderPath[255] = { 0 };
@@ -503,7 +444,7 @@ CString CLightStripe::LS_OpenFile()
 	BROWSEINFO       sInfo;
 	::ZeroMemory(&sInfo, sizeof(BROWSEINFO));
 	sInfo.pidlRoot = 0;
-	sInfo.lpszTitle = "ÇëÑ¡Ôñ»º´æÎÄ¼şËùÔÚÎÄ¼ş¼Ğ";
+	sInfo.lpszTitle = "è¯·é€‰æ‹©ç¼“å­˜æ–‡ä»¶æ‰€åœ¨æ–‡ä»¶å¤¹";
 	sInfo.ulFlags = BIF_RETURNONLYFSDIRS | BIF_EDITBOX | BIF_DONTGOBELOWDOMAIN;
 	sInfo.lpfn = NULL;
 
@@ -521,7 +462,7 @@ CString CLightStripe::LS_OpenFile()
 	}
 	return strFolderPath;
 }
-// ¹âÌõ»Ö¸´
+// å…‰æ¡æ¢å¤
 void CLightStripe::LS_StripeToPoint(String& m_sPicPath)
 {
 	String sPath = m_sPicPath;
